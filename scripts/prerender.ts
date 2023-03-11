@@ -9,19 +9,21 @@ import path from 'path'
 const absolute = (p: string) => path.resolve(__dirname, p)
 
 const template: string = fs.readFileSync(
-  absolute('dist/static/index.html'),
+  absolute('../dist/static/index.html'),
   'utf-8'
 )
 
 // 判断那些页面是需要预渲染的
-const routesToPrerender = fs.readdirSync(absolute('src/pages')).map((file) => {
-  const name = file.replace(/\.tsx$/, '').toLowerCase()
-  return name === 'home' ? `/index` : `/${name}`
-})
+const routesToPrerender = fs
+  .readdirSync(absolute('../src/pages'))
+  .map((file) => {
+    const name = file.replace(/\.tsx$/, '').toLowerCase()
+    return name === 'home' ? `/index` : `/${name}`
+  })
 
 async function prerender() {
   // 遍历需要预渲染的页面
-  const { render } = await import(absolute('dist/server/entry-server.js'))
+  const { render } = await import(absolute('../dist/server/entry-server.js'))
 
   for (const url of routesToPrerender) {
     const context = {}
@@ -29,7 +31,7 @@ async function prerender() {
 
     const html = template.replace(`<!--ssr-outlet-->`, appHtml)
 
-    const filePath = `dist/static${url}.html`
+    const filePath = `../dist/static${url}.html`
     fs.writeFileSync(absolute(filePath), html)
     console.log('pre-rendered:', filePath)
   }

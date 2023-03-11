@@ -12,7 +12,7 @@ import { ViteDevServer } from 'vite'
 //区分集成生产环境
 const IS_PROP = process.env.NODE_ENV === 'production'
 
-const resolve = (p: string) => path.resolve(__dirname, p)
+const resolve = (p: string) => path.resolve(__dirname, '../', p)
 
 export async function createServer() {
   const app = express()
@@ -49,10 +49,7 @@ export async function createServer() {
         //开发模式
         // 1. 读取 index.html
         //    开发模式总是读取最新的html
-        template = fs.readFileSync(
-          path.resolve(__dirname, 'index.html'),
-          'utf-8'
-        )
+        template = fs.readFileSync(resolve('index.html'), 'utf-8')
 
         // 2. 应用 Vite HTML 转换。
         //    这将会注入 Vite HMR 客户端，
@@ -64,7 +61,8 @@ export async function createServer() {
         //    vite.ssrLoadModule 将自动转换
         //    你的 ESM 源码使之可以在 Node.js 中运行！无需打包
         //    并提供类似 HMR 的根据情况随时失效。
-        render = (await vite.ssrLoadModule('/src/entry-server.tsx')).render
+        render = (await vite.ssrLoadModule(resolve('src/entry-server.tsx')))
+          .render
       } else {
         //生产模式
 
@@ -80,7 +78,6 @@ export async function createServer() {
       //    例如 ReactDOMServer.renderToString()
       // 5. 注入渲染后的应用程序 HTML 到模板中。
       const [startHtml, endHtml] = template.split('<!--ssr-outlet-->')
-      console.log(123123)
       await render({
         url,
         startHtml,
